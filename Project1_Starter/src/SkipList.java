@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
+import SkipList.SkipNode;
+
 
 /**
  * This class implements SkipList data structure and contains an inner SkipNode
@@ -52,8 +54,30 @@ public class SkipList<K extends Comparable<? super K>, V>
      *            key to be searched for
      */
     public ArrayList<KVPair<K, V>> search(K key) {
-        return null;
-    }
+   	 ArrayList<KVPair<K, V>> result = new ArrayList<>();
+	    SkipNode current = head;
+	    // Traverse the SkipList starting from the head node at the highest level
+	    for (int i = head.level; i >= 0; i--) {
+	        // Move down the levels until the target key is found or a larger key is encountered
+	        while (current.forward[i] != null && current.forward[i].pair.getKey().compareTo(key) < 0) {
+	            current = current.forward[i];
+	        }
+	        // If the target key is found, add it to the result list and continue searching for duplicates
+	        if (current.forward[i] != null && current.forward[i].pair.getKey().compareTo(key) == 0) {
+	            result.add(current.forward[i].pair);
+	            SkipNode next = current.forward[i].forward[i];
+	            while (next != null && next.pair.getKey().compareTo(key) == 0) {
+	                result.add(next.pair);
+	                next = next.forward[i];
+	            }
+	        }
+	    }
+	    // Return null if the target key is not found
+	    if (result.isEmpty()) {
+	        return null;
+	    }
+	    return result;
+	}
 
 
     /**
